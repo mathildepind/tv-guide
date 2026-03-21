@@ -424,6 +424,7 @@ export default function DetailScreen() {
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
+        contentInset={{ bottom: 100 }}
       >
         {/* ── Hero ── */}
         <View style={styles.heroContainer}>
@@ -537,31 +538,6 @@ export default function DetailScreen() {
             textAlignVertical="top"
           />
 
-          {/* ── Save / Remove buttons ── */}
-          <TouchableOpacity
-            style={[styles.saveBtn, isSaving && styles.saveBtnDisabled]}
-            onPress={handleSave}
-            disabled={isSaving || !draftStatus}
-          >
-            {isSaving ? (
-              <ActivityIndicator color="#ffffff" size="small" />
-            ) : (
-              <>
-                <Ionicons name="save-outline" size={18} color="#ffffff" />
-                <Text style={styles.saveBtnText}>
-                  {entry ? 'Update' : 'Save to List'}
-                </Text>
-              </>
-            )}
-          </TouchableOpacity>
-
-          {entry && (
-            <TouchableOpacity style={styles.removeBtn} onPress={handleRemove}>
-              <Ionicons name="trash-outline" size={16} color={COLORS.accent} />
-              <Text style={styles.removeBtnText}>Remove from lists</Text>
-            </TouchableOpacity>
-          )}
-
           {/* ── Season tracker (TV only) ── */}
           {mediaType === 'tv' && seasons.length > 0 && (
             <>
@@ -591,6 +567,32 @@ export default function DetailScreen() {
           )}
         </View>
       </ScrollView>
+
+      {/* ── Sticky footer ── */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.saveBtn, (isSaving || !draftStatus) && styles.saveBtnDisabled]}
+          onPress={handleSave}
+          disabled={isSaving || !draftStatus}
+        >
+          {isSaving ? (
+            <ActivityIndicator color="#ffffff" size="small" />
+          ) : (
+            <>
+              <Ionicons name="save-outline" size={18} color="#ffffff" />
+              <Text style={styles.saveBtnText}>
+                {entry ? 'Update' : 'Save to List'}
+              </Text>
+            </>
+          )}
+        </TouchableOpacity>
+        {entry && (
+          <TouchableOpacity style={styles.removeBtn} onPress={handleRemove}>
+            <Ionicons name="trash-outline" size={16} color={COLORS.accent} />
+            <Text style={styles.removeBtnText}>Remove from lists</Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </KeyboardAvoidingView>
   );
 }
@@ -725,12 +727,23 @@ const styles = StyleSheet.create({
     minHeight: 100,
     lineHeight: 20,
   },
+  footer: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: COLORS.background,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 28,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+  },
   saveBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
-    marginTop: 20,
     paddingVertical: 14,
     backgroundColor: COLORS.accent,
     borderRadius: 12,
@@ -742,8 +755,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     gap: 6,
-    marginTop: 12,
-    paddingVertical: 10,
+    marginTop: 10,
+    paddingVertical: 6,
   },
   removeBtnText: { color: COLORS.accent, fontSize: 13, fontWeight: '600' },
   seasonHint: {

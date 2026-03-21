@@ -135,6 +135,7 @@ export default function MyListsScreen() {
   const [activeTab, setActiveTab] = useState<TabKey>('want_to_watch');
   const [entries, setEntries] = useState<Entry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Re-fetch whenever the screen is focused (e.g. returning from DetailScreen)
   useFocusEffect(
@@ -143,9 +144,12 @@ export default function MyListsScreen() {
 
       async function load() {
         setIsLoading(true);
+        setError(null);
         try {
           const data = await getEntries(activeTab);
           if (active) setEntries(data);
+        } catch (err) {
+          if (active) setError(String(err));
         } finally {
           if (active) setIsLoading(false);
         }
@@ -226,6 +230,13 @@ export default function MyListsScreen() {
           {entries.length} title{entries.length !== 1 ? 's' : ''}
         </Text>
       )}
+
+      {/* ── Error ── */}
+      {error ? (
+        <View style={styles.centered}>
+          <Text style={{ color: '#E50914', padding: 16 }}>DB error: {error}</Text>
+        </View>
+      ) : null}
 
       {/* ── Content ── */}
       {isLoading ? (
