@@ -49,6 +49,7 @@ const COLORS = {
   border: '#2a2a2a',
   success: '#10b981',
   successDim: '#065f46',
+  watching: '#6366f1',
 };
 
 type NavProp = NativeStackNavigationProp<SearchStackParamList, 'Detail'>;
@@ -268,7 +269,7 @@ export default function DetailScreen() {
 
   const handleSave = useCallback(async () => {
     if (!draftStatus) {
-      Alert.alert('No list selected', 'Please choose "Want to Watch" or "Watched" first.');
+      Alert.alert('No list selected', 'Please choose a status first.');
       return;
     }
 
@@ -492,6 +493,28 @@ export default function DetailScreen() {
             <TouchableOpacity
               style={[
                 styles.statusBtn,
+                draftStatus === 'watching' && styles.statusBtnActiveWatching,
+              ]}
+              onPress={() => setDraftStatus('watching')}
+            >
+              <Ionicons
+                name="play-circle-outline"
+                size={16}
+                color={draftStatus === 'watching' ? '#ffffff' : COLORS.textMuted}
+              />
+              <Text
+                style={[
+                  styles.statusBtnText,
+                  draftStatus === 'watching' && styles.statusBtnTextActive,
+                ]}
+              >
+                Watching
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.statusBtn,
                 draftStatus === 'watched' && styles.statusBtnActiveGreen,
               ]}
               onPress={() => setDraftStatus('watched')}
@@ -709,6 +732,10 @@ const styles = StyleSheet.create({
   statusBtnActive: {
     backgroundColor: COLORS.accent,
     borderColor: COLORS.accent,
+  },
+  statusBtnActiveWatching: {
+    backgroundColor: COLORS.watching,
+    borderColor: COLORS.watching,
   },
   statusBtnActiveGreen: {
     backgroundColor: COLORS.success,

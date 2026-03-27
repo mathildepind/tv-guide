@@ -2,7 +2,7 @@
 
 export type MediaType = 'movie' | 'tv';
 
-export type WatchStatus = 'want_to_watch' | 'watched';
+export type WatchStatus = 'want_to_watch' | 'watching' | 'watched';
 
 // ─── Rotten Tomatoes API types ────────────────────────────────────────────────
 

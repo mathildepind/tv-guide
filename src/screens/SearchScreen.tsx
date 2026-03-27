@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -118,19 +118,15 @@ export default function SearchScreen() {
   const [results, setResults] = useState<RTSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const performSearch = useCallback(async (q: string) => {
-    if (!q.trim()) {
-      setResults([]);
-      setIsLoading(false);
-      return;
-    }
+  const performSearch = useCallback(async () => {
+    if (!query.trim()) return;
 
+    Keyboard.dismiss();
     setIsLoading(true);
     setError(null);
     try {
-      const data = await searchMulti(q);
+      const data = await searchMulti(query);
       setResults(data);
     } catch (err) {
       setError('Failed to fetch results. Check your connection and API key.');
@@ -138,22 +134,10 @@ export default function SearchScreen() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      performSearch(query);
-    }, 300);
-
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [query, performSearch]);
+  }, [query]);
 
   const handlePress = useCallback(
     (item: RTSearchResult) => {
-      Keyboard.dismiss();
       navigation.navigate('Detail', {
         emsId: item.emsId,
         mediaType: item.type,
@@ -179,18 +163,20 @@ export default function SearchScreen() {
       {/* Search bar */}
       <View style={styles.searchBarRow}>
         <View style={styles.searchInputWrapper}>
-          <Ionicons
-            name="search-outline"
-            size={18}
-            color={COLORS.textSubtle}
-            style={styles.searchIcon}
-          />
+          <TouchableOpacity onPress={performSearch} style={styles.searchIcon}>
+            <Ionicons
+              name="search-outline"
+              size={18}
+              color={COLORS.textSubtle}
+            />
+          </TouchableOpacity>
           <TextInput
             style={styles.searchInput}
             placeholder="Search movies & TV shows…"
             placeholderTextColor={COLORS.textSubtle}
             value={query}
             onChangeText={setQuery}
+            onSubmitEditing={performSearch}
             returnKeyType="search"
             autoCorrect={false}
             autoCapitalize="none"

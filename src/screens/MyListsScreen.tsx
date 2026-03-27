@@ -27,6 +27,7 @@ const COLORS = {
   textSubtle: '#6b7280',
   border: '#2a2a2a',
   success: '#10b981',
+  watching: '#6366f1',
 };
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
@@ -108,6 +109,14 @@ function EmptyState({ status }: { status: WatchStatus }) {
             Search for movies and TV shows and add them to your watchlist.
           </Text>
         </>
+      ) : status === 'watching' ? (
+        <>
+          <Ionicons name="play-circle-outline" size={56} color={COLORS.textSubtle} />
+          <Text style={styles.emptyTitle}>Not watching anything</Text>
+          <Text style={styles.emptySubtitle}>
+            Mark a title as "Watching" to track what you're currently in the middle of.
+          </Text>
+        </>
       ) : (
         <>
           <Ionicons name="checkmark-circle-outline" size={56} color={COLORS.textSubtle} />
@@ -123,10 +132,11 @@ function EmptyState({ status }: { status: WatchStatus }) {
 
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
-type TabKey = 'want_to_watch' | 'watched';
+type TabKey = 'want_to_watch' | 'watching' | 'watched';
 
 const TABS: Array<{ key: TabKey; label: string }> = [
   { key: 'want_to_watch', label: 'Want to Watch' },
+  { key: 'watching', label: 'Watching' },
   { key: 'watched', label: 'Watched' },
 ];
 
@@ -202,6 +212,12 @@ export default function MyListsScreen() {
                 size={14}
                 color={activeTab === tab.key ? COLORS.accent : COLORS.textSubtle}
               />
+            ) : tab.key === 'watching' ? (
+              <Ionicons
+                name="play-circle"
+                size={14}
+                color={activeTab === tab.key ? COLORS.watching : COLORS.textSubtle}
+              />
             ) : (
               <Ionicons
                 name="checkmark-circle"
@@ -212,10 +228,9 @@ export default function MyListsScreen() {
             <Text
               style={[
                 styles.tabBtnText,
-                activeTab === tab.key &&
-                  (tab.key === 'want_to_watch'
-                    ? styles.tabBtnTextAccent
-                    : styles.tabBtnTextSuccess),
+                activeTab === tab.key && tab.key === 'want_to_watch' && styles.tabBtnTextAccent,
+                activeTab === tab.key && tab.key === 'watching' && styles.tabBtnTextWatching,
+                activeTab === tab.key && tab.key === 'watched' && styles.tabBtnTextSuccess,
               ]}
             >
               {tab.label}
@@ -298,6 +313,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   tabBtnTextAccent: { color: COLORS.accent },
+  tabBtnTextWatching: { color: COLORS.watching },
   tabBtnTextSuccess: { color: COLORS.success },
   // Count
   countLabel: {

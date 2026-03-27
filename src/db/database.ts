@@ -32,8 +32,49 @@ export async function initDatabase(): Promise<SQLite.SQLiteDatabase> {
     await db.execAsync(statement);
   }
 
+  await runMigrations(db);
+
   _db = db;
   return db;
+}
+
+/**
+ * Runs incremental schema migrations keyed by `PRAGMA user_version`.
+ * Each migration bracket is idempotent — safe to run on a fresh DB too.
+ */
+async function runMigrations(db: SQLite.SQLiteDatabase): Promise<void> {
+  const row = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
+  const version = row?.user_version ?? 0;
+
+  if (version < 1) {
+    // v1 — add 'watching' to the status CHECK constraint.
+    // SQLite doesn't support ALTER COLUMN, so we recreate the table.
+    const tableExists = await db.getFirstAsync<{ name: string }>(
+      "SELECT name FROM sqlite_master WHERE type='table' AND name='entries'",
+    );
+    if (tableExists) {
+      await db.execAsync(`
+        CREATE TABLE IF NOT EXISTS entries_v1 (
+          id          INTEGER PRIMARY KEY AUTOINCREMENT,
+          ems_id      TEXT    NOT NULL,
+          media_type  TEXT    NOT NULL CHECK(media_type IN ('movie', 'tv')),
+          title       TEXT    NOT NULL,
+          poster_path TEXT,
+          overview    TEXT    NOT NULL DEFAULT '',
+          status      TEXT    NOT NULL CHECK(status IN ('want_to_watch', 'watching', 'watched')),
+          rating      INTEGER CHECK(rating IS NULL OR (rating >= 1 AND rating <= 5)),
+          notes       TEXT,
+          added_at    TEXT    NOT NULL,
+          watched_at  TEXT,
+          UNIQUE(ems_id, media_type)
+        );
+        INSERT INTO entries_v1 SELECT * FROM entries;
+        DROP TABLE entries;
+        ALTER TABLE entries_v1 RENAME TO entries;
+      `);
+    }
+    await db.execAsync('PRAGMA user_version = 1');
+  }
 }
 
 // ─── Entries ─────────────────────────────────────────────────────────────────

@@ -14,7 +14,7 @@ export const CREATE_ENTRIES_TABLE = `
     title       TEXT    NOT NULL,
     poster_path TEXT,
     overview    TEXT    NOT NULL DEFAULT '',
-    status      TEXT    NOT NULL CHECK(status IN ('want_to_watch', 'watched')),
+    status      TEXT    NOT NULL CHECK(status IN ('want_to_watch', 'watching', 'watched')),
     rating      INTEGER CHECK(rating IS NULL OR (rating >= 1 AND rating <= 5)),
     notes       TEXT,
     added_at    TEXT    NOT NULL,
