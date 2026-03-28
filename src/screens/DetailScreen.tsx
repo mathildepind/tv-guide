@@ -477,7 +477,7 @@ export default function DetailScreen() {
             >
               <Ionicons
                 name="bookmark-outline"
-                size={16}
+                size={14}
                 color={draftStatus === 'want_to_watch' ? '#ffffff' : COLORS.textMuted}
               />
               <Text
@@ -485,6 +485,8 @@ export default function DetailScreen() {
                   styles.statusBtnText,
                   draftStatus === 'want_to_watch' && styles.statusBtnTextActive,
                 ]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
               >
                 Want to Watch
               </Text>
@@ -499,7 +501,7 @@ export default function DetailScreen() {
             >
               <Ionicons
                 name="play-circle-outline"
-                size={16}
+                size={14}
                 color={draftStatus === 'watching' ? '#ffffff' : COLORS.textMuted}
               />
               <Text
@@ -507,6 +509,8 @@ export default function DetailScreen() {
                   styles.statusBtnText,
                   draftStatus === 'watching' && styles.statusBtnTextActive,
                 ]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
               >
                 Watching
               </Text>
@@ -521,7 +525,7 @@ export default function DetailScreen() {
             >
               <Ionicons
                 name="checkmark-circle-outline"
-                size={16}
+                size={14}
                 color={draftStatus === 'watched' ? '#ffffff' : COLORS.textMuted}
               />
               <Text
@@ -529,6 +533,8 @@ export default function DetailScreen() {
                   styles.statusBtnText,
                   draftStatus === 'watched' && styles.statusBtnTextActive,
                 ]}
+                numberOfLines={1}
+                adjustsFontSizeToFit
               >
                 Watched
               </Text>
@@ -716,14 +722,15 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 20,
   },
-  statusRow: { flexDirection: 'row', gap: 10 },
+  statusRow: { flexDirection: 'row', gap: 6 },
   statusBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 6,
+    gap: 4,
     paddingVertical: 12,
+    paddingHorizontal: 6,
     borderRadius: 10,
     borderWidth: 1.5,
     borderColor: COLORS.border,
